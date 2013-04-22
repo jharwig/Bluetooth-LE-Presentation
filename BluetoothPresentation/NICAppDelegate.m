@@ -18,7 +18,7 @@
     manager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 
     [self startScan];
-        
+    
     return YES;
 }
 
@@ -39,26 +39,6 @@
  */
 - (void) updateWithHRMData:(NSData *)data
 {
-    /*CBCharacteristic *characteristic;
-    BOOL error = NO;
-    
-    // Updated value for heart rate measurement received 
-    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@"2A37"]])
-    {
-        const uint8_t *reportData = [characteristic.value bytes];
-        uint16_t bpm = 0;
-        
-        if ((reportData[0] & 0x01) == 0)
-        {
-            // uint8 bpm
-            bpm = reportData[1];
-        }
-        else
-        {
-            // uint16 bpm
-            bpm = CFSwapInt16LittleToHost(*(uint16_t *)(&reportData[1]));
-        }
-    }*/
     const uint8_t *reportData = [data bytes];
     uint16_t bpm = 0;
     
@@ -71,15 +51,14 @@
     {
         /* uint16 bpm */
         bpm = CFSwapInt16LittleToHost(*(uint16_t *)(&reportData[1]));
-    }
-    
+    }    
     
     UILabel *label = (UILabel *)[self.window viewWithTag:1000];
     UIImageView *skull = (UIImageView *)[self.window viewWithTag:1001];
     if (bpm == 0) {        
         if (!skull) {
             skull = [[UIImageView alloc] initWithFrame:CGRectMake(260, 10, 50, 50)];
-            skull.image = [UIImage imageNamed:@"skull@2x.jpg"];
+            skull.image = [UIImage imageNamed:@"dead@2x.jpg"];
             skull.tag = 1001;
             skull.transform = CGAffineTransformMakeRotation(M_PI_2);
             [self.window addSubview:skull];
@@ -185,7 +164,8 @@
  */
 - (void) startScan
 {
-    [manager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:@"180D"]] options:nil];
+//    NSArray *services = @[[CBUUID UUIDWithString:@"180D"], [CBUUID UUIDWithString:@"180A"]];
+    [manager scanForPeripheralsWithServices:nil options:nil];
 }
 
 /*
@@ -235,7 +215,8 @@
     {
         peripheral = [peripherals objectAtIndex:0];
 
-        [manager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+        [manager connectPeripheral:peripheral
+                           options:@{CBConnectPeripheralOptionNotifyOnDisconnectionKey:@YES}];
     }
 }
 
@@ -245,6 +226,7 @@
  */
 - (void) centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)aPeripheral
 {
+    NSLog(@"Connected to %@", aPeripheral);
     [aPeripheral setDelegate:self];
     [aPeripheral discoverServices:nil];
 	
@@ -257,6 +239,8 @@
  */
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)aPeripheral error:(NSError *)error
 {
+    NSLog(@"Disconnected to %@", aPeripheral);
+    
 	self.connected = @"Not connected";
     self.manufacturer = @"";
     self.heartRate = 0;
@@ -382,6 +366,9 @@
  */
 - (void) peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
+    if (error) {
+        NSLog(@"%@", error);
+    }
     /* Updated value for heart rate measurement received */
     if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:@"2A37"]])
     {

@@ -310,6 +310,7 @@
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="code@2x.png" translatesAutoresizingMaskIntoConstraints="NO" id="DOc-fe-0qE">
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="490" id="I7f-XZ-dsV"/>
                                     <constraint firstAttribute="height" constant="250" id="fdw-oS-iDW"/>
                                 </constraints>
                             </imageView>
@@ -318,7 +319,6 @@
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="DOc-fe-0qE" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="7GA-BD-7RC"/>
                             <constraint firstAttribute="centerY" secondItem="DOc-fe-0qE" secondAttribute="centerY" type="user" id="Ehe-ke-urA"/>
-                            <constraint firstItem="DOc-fe-0qE" firstAttribute="leading" secondItem="zhH-d2-NA0" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="WcD-6F-eex"/>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
